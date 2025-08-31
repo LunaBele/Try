@@ -1,2 +1,42 @@
+modules = ["lua"]
 [agent]
 expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["lua"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Lua Script"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test-lua-script"
+
+[[workflows.workflow]]
+name = "Lua Script"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "lua Main.lua"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "test-lua-script"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "lua Main.lua"
