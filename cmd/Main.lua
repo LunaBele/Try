@@ -1,154 +1,276 @@
--- Stilling huh? pathetic!
-
-local _0x1 = getgenv() or _G
-if _0x1._0x2 then
-    warn("\x41\x6E\x6F\x74\x68\x65\x72\x20\x69\x6E\x73\x74\x61\x6E\x63\x65\x20\x69\x73\x20\x72\x75\x6E\x6E\x69\x6E\x67\x21\x20\x53\x74\x6F\x70\x70\x69\x6E\x67\x2E\x2E\x2E")
+-- Prevent multiple instances
+if getgenv().GAG_AUTOBUY_RUNNING then
+    warn("Another instance is running! Stopping this one...")
     return
 end
-_0x1._0x2 = true
+getgenv().GAG_AUTOBUY_RUNNING = true
 
+-- Only run in Grow a Garden
 if game.PlaceId ~= 126884695634066 then
-    warn("\x53\x63\x72\x69\x70\x74\x20\x6F\x6E\x6C\x79\x20\x77\x6F\x72\x6B\x73\x20\x69\x6E\x20\x47\x72\x6F\x77\x20\x61\x20\x47\x61\x72\x64\x65\x6E\x21")
+    warn("This script only works in Grow a Garden!")
     return
 end
 
-local _0x3 = loadstring(game:HttpGet("\x68\x74\x74\x70\x73\x3A\x2F\x2F\x73\x69\x72\x69\x75\x73\x2E\x6D\x65\x6E\x75\x2F\x72\x61\x79\x66\x69\x65\x6C\x64"))()
+-- Load Rayfield
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local _0x4 = game:GetService("\x50\x6C\x61\x79\x65\x72\x73")
-local _0x5 = game:GetService("\x52\x65\x70\x6C\x69\x63\x61\x74\x65\x64\x53\x74\x6F\x72\x61\x67\x65")
-local _0x6 = game:GetService("\x56\x69\x72\x74\x75\x61\x6C\x55\x73\x65\x72")
-local _0x7 = game:GetService("\x54\x65\x6C\x65\x70\x6F\x72\x74\x53\x65\x72\x76\x69\x63\x65")
-local _0x8 = _0x4.LocalPlayer
+-- Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local TeleportService = game:GetService("TeleportService")
+local LocalPlayer = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
 
-local _0x9 = {
-    _0xA = false,
-    _0xB = true,
-    _0xC = {},
-    _0xD = {},
-    _0xE = {},
-    _0xF = 0.1,
-    _0x10 = "\x41\x6D\x65\x74\x68\x79\x73\x74"
-}
+-- Config Save/Load
+local ConfigFolder = "GAG_AFK"
+local ConfigFile = ConfigFolder.."/DropWatchConfig.json"
+if not isfolder(ConfigFolder) then makefolder(ConfigFolder) end
+local Config = {}
 
-local _0x11 = {
-    _0x12 = 0
-}
+local function saveConfig()
+    writefile(ConfigFile, HttpService:JSONEncode(Config))
+end
 
-local _0x13 = {
-    "\x41\x70\x70\x6C\x65", "\x42\x61\x6D\x62\x6F\x6F", "\x42\x65\x61\x6E\x73\x74\x61\x6C\x6B", "\x42\x6C\x75\x65\x62\x65\x72\x72\x79",
-    "\x42\x75\x72\x6E\x69\x6E\x67\x20\x42\x75\x64", "\x43\x61\x63\x61\x6F", "\x43\x61\x63\x74\x75\x73", "\x43\x61\x72\x72\x6F\x74",
-    "\x43\x6F\x63\x6F\x6E\x75\x74", "\x43\x6F\x72\x6E", "\x44\x61\x66\x66\x6F\x64\x69\x6C", "\x44\x72\x61\x67\x6F\x6E\x20\x46\x72\x75\x69\x74",
-    "\x45\x6C\x64\x65\x72\x20\x53\x74\x72\x61\x77\x62\x65\x72\x72\x79", "\x45\x6D\x62\x65\x72\x20\x4C\x69\x6C\x79", "\x47\x69\x61\x6E\x74\x20\x50\x69\x6E\x65\x63\x6F\x6E\x65",
-    "\x47\x72\x61\x70\x65", "\x4D\x61\x6E\x67\x6F", "\x4D\x75\x73\x68\x72\x6F\x6F\x6D", "\x4F\x72\x61\x6E\x67\x65\x20\x54\x75\x6C\x69\x70",
-    "\x50\x65\x70\x70\x65\x72", "\x50\x75\x6D\x70\x6B\x69\x6E", "\x52\x6F\x6D\x61\x6E\x65\x73\x63\x6F", "\x53\x74\x72\x61\x77\x62\x65\x72\x72\x79",
-    "\x53\x75\x67\x61\x72\x20\x41\x70\x70\x6C\x65", "\x54\x6F\x6D\x61\x74\x6F", "\x57\x61\x74\x65\x72\x6D\x65\x6C\x6F\x6E"
-}
-local _0x14 = {
-    "\x42\x75\x67\x20\x45\x67\x67", "\x43\x6F\x6D\x6D\x6F\x6E\x20\x45\x67\x67", "\x4C\x65\x67\x65\x6E\x64\x61\x72\x79\x20\x45\x67\x67",
-    "\x4D\x79\x74\x68\x69\x63\x61\x6C\x20\x45\x67\x67", "\x52\x61\x72\x65\x20\x45\x67\x67", "\x55\x6E\x63\x6F\x6D\x6D\x6F\x6E\x20\x45\x67\x67"
-}
-local _0x15 = {
-    "\x41\x64\x76\x61\x6E\x63\x65\x64\x20\x53\x70\x72\x69\x6E\x6B\x6C\x65\x72", "\x42\x61\x73\x69\x63\x20\x53\x70\x72\x69\x6E\x6B\x6C\x65\x72",
-    "\x43\x6C\x65\x61\x6E\x69\x6E\x67\x20\x53\x70\x72\x61\x79", "\x43\x6C\x65\x61\x6E\x73\x69\x6E\x67\x20\x50\x65\x74\x20\x53\x68\x61\x72\x64",
-    "\x46\x61\x76\x6F\x72\x69\x74\x65\x20\x54\x6F\x6F\x6C", "\x46\x72\x69\x65\x6E\x64\x73\x68\x69\x70\x20\x50\x6F\x74",
-    "\x47\x6F\x64\x6C\x79\x20\x53\x70\x72\x69\x6E\x6B\x6C\x65\x72", "\x47\x72\x61\x6E\x64\x6D\x61\x73\x74\x65\x72\x20\x53\x70\x72\x69\x6E\x6B\x6C\x65\x72",
-    "\x48\x61\x72\x76\x65\x73\x74\x20\x54\x6F\x6F\x6C", "\x4C\x65\x76\x65\x6C\x75\x70\x20\x4C\x6F\x6C\x6C\x69\x70\x6F\x70",
-    "\x4D\x61\x67\x6E\x69\x66\x79\x69\x6E\x67\x20\x47\x6C\x61\x73\x73", "\x4D\x61\x73\x74\x65\x72\x20\x53\x70\x72\x69\x6E\x6B\x6C\x65\x72",
-    "\x52\x65\x63\x61\x6C\x6C\x20\x57\x72\x65\x6E\x63\x68", "\x54\x72\x61\x64\x69\x6E\x67\x20\x54\x69\x63\x6B\x65\x74", "\x54\x72\x6F\x77\x65\x6C", "\x57\x61\x74\x65\x72\x69\x6E\x67\x20\x43\x61\x6E"
-}
+local function loadConfig()
+    if isfile(ConfigFile) then
+        local data = readfile(ConfigFile)
+        local success, decoded = pcall(function()
+            return HttpService:JSONDecode(data)
+        end)
+        if success and type(decoded) == "table" then
+            Config = decoded
+        end
+    end
+end
 
-local _0x16 = _0x3:CreateWindow({
-    Name = "\x47\x41\x47\x20\x41\x75\x74\x6F\x2D\x42\x75\x79",
-    LoadingTitle = "\x4C\x6F\x61\x64\x69\x6E\x67\x2E\x2E\x2E",
-    LoadingSubtitle = "\x62\x79\x20\x4D\x41\x52\x54\x20\x4A\x4F\x48\x4E\x20\x4C\x41\x42\x41\x43\x4F",
-    ConfigurationSaving = { Enabled=true, FolderName="\x47\x41\x47\x5F\x41\x46\x4B", FileName="\x44\x72\x6F\x70\x57\x61\x74\x63\x68\x43\x6F\x6E\x66\x69\x67" },
+loadConfig()
+
+-- Default Config values
+Config.AutoBuyEnabled = Config.AutoBuyEnabled or false
+Config.AntiAFK = Config.AntiAFK ~= false
+Config.SelectedSeeds = Config.SelectedSeeds or {}
+Config.SelectedEggs = Config.SelectedEggs or {}
+Config.SelectedGears = Config.SelectedGears or {}
+Config.BuyInterval = Config.BuyInterval or 0.1
+Config.Theme = Config.Theme or "Amethyst"
+Config.ModifyWalkSpeed = Config.ModifyWalkSpeed or false
+Config.ModifyJumpPower = Config.ModifyJumpPower or false
+Config.WalkSpeedValue = Config.WalkSpeedValue or 16
+Config.JumpPowerValue = Config.JumpPowerValue or 50
+
+-- Timer
+local TIMER = { StartTime = 0 }
+local function resetTimer() TIMER.StartTime = tick() end
+
+-- Items
+local SEEDS = {"Apple","Bamboo","Beanstalk","Blueberry","Burning Bud","Cacao","Cactus","Carrot","Coconut","Corn","Daffodil","Dragon Fruit","Elder Strawberry","Ember Lily","Giant Pinecone","Grape","Mango","Mushroom","Orange Tulip","Pepper","Pumpkin","Romanesco","Strawberry","Sugar Apple","Tomato","Watermelon"}
+local EGGS = {"Bug Egg","Common Egg","Legendary Egg","Mythical Egg","Rare Egg","Uncommon Egg"}
+local GEARS = {"Advanced Sprinkler","Basic Sprinkler","Cleaning Spray","Cleansing Pet Shard","Favorite Tool","Friendship Pot","Godly Sprinkler","Grandmaster Sprinkler","Harvest Tool","Levelup Lollipop","Magnifying Glass","Master Sprinkler","Recall Wrench","Trading Ticket","Trowel","Watering Can"}
+
+-- Rayfield Window
+local Window = Rayfield:CreateWindow({
+    Name = "GAG Auto-Buy",
+    LoadingTitle = "Loading Script...",
+    LoadingSubtitle = "by MART JOHN LABACO",
+    ConfigurationSaving = { Enabled=false }, -- handled manually
     KeySystem = false,
-    Theme = _0x9._0x10
+    Theme = Config.Theme
 })
 
-local _0x17 = _0x16:CreateTab("\x4D\x61\x69\x6E", 4483362458)
-local _0x18 = _0x17:CreateLabel("\x53\x74\x61\x74\x75\x73\x3A\x20\x53\x74\x6F\x70\x70\x65\x64\x20\xE2\x80\x94\x20\x62\x79\x20\x4D\x41\x52\x54\x20\x4A\x4F\x48\x4E\x20\x4C\x41\x42\x41\x43\x4F")
-local _0x19 = _0x17:CreateLabel("\x53\x65\x6C\x65\x63\x74\x65\x64\x3A\x20\x4E\x6F\x6E\x65")
-local _0x1A = _0x17:CreateLabel("\x41\x46\x4B\x20\x54\x69\x6D\x65\x72\x3A\x20\x30\x73")
-_0x17:CreateLabel("\x57\x65\x6C\x63\x6F\x6D\x65\x20" .. _0x8.Name .. "\x21")
+-- Tabs & Labels
+local MainTab = Window:CreateTab("Main", 4483362458)
+local StatusLabel = MainTab:CreateLabel("Status: Stopped — by MART JOHN LABACO")
+local SelectionLabel = MainTab:CreateLabel("Selected: None")
+local TimerLabel = MainTab:CreateLabel("AFK Timer: 0s")
+MainTab:CreateLabel("Welcome " .. LocalPlayer.Name .. "!")
 
-local _0x1B = _0x17:CreateDropdown({Name="\x53\x65\x6C\x65\x63\x74\x20\x53\x65\x65\x64\x73", Options=_0x13, MultipleOptions=true, Search=true, Callback=function(_0x1C) _0x9._0xC=_0x1C end})
-local _0x1D = _0x17:CreateDropdown({Name="\x53\x65\x6C\x65\x63\x74\x20\x45\x67\x67\x73", Options=_0x14, MultipleOptions=true, Search=true, Callback=function(_0x1C) _0x9._0xD=_0x1C end})
-local _0x1E = _0x17:CreateDropdown({Name="\x53\x65\x6C\x65\x63\x74\x20\x47\x65\x61\x72", Options=_0x15, MultipleOptions=true, Search=true, Callback=function(_0x1C) _0x9._0xE=_0x1C end})
+-- Dropdowns
+local SeedDropdown = MainTab:CreateDropdown({
+    Name="Select Seeds", Options=SEEDS, MultipleOptions=true, Search=true,
+    CurrentOption = Config.SelectedSeeds,
+    Callback=function(opts) Config.SelectedSeeds=opts; saveConfig() end
+})
+local EggDropdown = MainTab:CreateDropdown({
+    Name="Select Eggs", Options=EGGS, MultipleOptions=true, Search=true,
+    CurrentOption = Config.SelectedEggs,
+    Callback=function(opts) Config.SelectedEggs=opts; saveConfig() end
+})
+local GearDropdown = MainTab:CreateDropdown({
+    Name="Select Gear", Options=GEARS, MultipleOptions=true, Search=true,
+    CurrentOption = Config.SelectedGears,
+    Callback=function(opts) Config.SelectedGears=opts; saveConfig() end
+})
 
-local function _0x1F()
-    _0x11._0x12 = tick()
-end
-
-_0x17:CreateToggle({
-    Name="\x41\x75\x74\x6F\x2D\x42\x75\x79\x20\x28\x53\x65\x65\x64\x73\x2C\x20\x45\x67\x67\x73\x2C\x20\x47\x65\x61\x72\x29",
-    CurrentValue=false,
-    Callback=function(_0x20)
-        _0x9._0xA = _0x20
-        if _0x20 then
-            _0x18:Set("\x53\x74\x61\x74\x75\x73\x3A\x20\x52\x75\x6E\x6E\x69\x6E\x67\x20\x28\x30\x2E\x31\x73\x20\x69\x6E\x74\x65\x72\x76\x61\x6C\x29")
-            _0x1F()
-        else
-            _0x18:Set("\x53\x74\x61\x74\x75\x73\x3A\x20\x53\x74\x6F\x70\x70\x65\x64\x20\xE2\x80\x94\x20\x62\x79\x20\x4D\x41\x52\x54\x20\x4A\x4F\x48\x4E\x20\x4C\x41\x42\x41\x43\x4F")
-            _0x1A:Set("\x41\x46\x4B\x20\x54\x69\x6D\x65\x72\x3A\x20\x30\x73")
+-- Auto-Buy Toggle
+MainTab:CreateToggle({
+    Name="Auto-Buy (Seeds, Eggs, Gear)",
+    CurrentValue=Config.AutoBuyEnabled,
+    Callback=function(state)
+        Config.AutoBuyEnabled=state
+        saveConfig()
+        if state then 
+            StatusLabel:Set("Status: Running ("..Config.BuyInterval.."s interval)")
+            resetTimer()
+        else 
+            StatusLabel:Set("Status: Stopped — by MART JOHN LABACO") 
+            TimerLabel:Set("AFK Timer: 0s")
         end
     end
 })
 
-_0x17:CreateKeybind({Name="\x54\x6F\x67\x67\x6C\x65\x20\x55\x49", CurrentKeybind="\x52\x69\x67\x68\x74\x53\x68\x69\x66\x74", HoldToInteract=false, Callback=function() _0x3:Toggle() end})
+-- UI Keybind
+MainTab:CreateKeybind({
+    Name="Toggle UI",
+    CurrentKeybind="RightShift",
+    HoldToInteract=false,
+    Callback=function() Rayfield:Toggle() end
+})
 
-local function _0x21(_0x22)
-    pcall(function() _0x5.GameEvents.BuySeedStock:FireServer("\x54\x69\x65\x72\x20\x31", _0x22) end)
+-- Buy Functions
+local function buySeed(name)
+    pcall(function() ReplicatedStorage.GameEvents.BuySeedStock:FireServer("Tier 1", name) end)
 end
-local function _0x23(_0x22)
-    pcall(function() _0x5.GameEvents.BuyPetEgg:FireServer(_0x22) end)
+local function buyEgg(name)
+    pcall(function() ReplicatedStorage.GameEvents.BuyPetEgg:FireServer(name) end)
 end
-local function _0x24(_0x22)
-    pcall(function() _0x5.GameEvents.BuyGearStock:FireServer(_0x22) end)
+local function buyGear(name)
+    pcall(function() ReplicatedStorage.GameEvents.BuyGearStock:FireServer(name) end)
 end
 
+-- Auto-Buy Loop
 task.spawn(function()
-    while task.wait(_0x9._0xF) do
-        if _0x9._0xA then
-            for _, _0x25 in ipairs(_0x9._0xC) do _0x21(_0x25) end
-            for _, _0x25 in ipairs(_0x9._0xD) do _0x23(_0x25) end
-            for _, _0x25 in ipairs(_0x9._0xE) do _0x24(_0x25) end
+    while task.wait(Config.BuyInterval) do
+        if Config.AutoBuyEnabled then
+            for _,s in ipairs(Config.SelectedSeeds) do buySeed(s) end
+            for _,e in ipairs(Config.SelectedEggs) do buyEgg(e) end
+            for _,g in ipairs(Config.SelectedGears) do buyGear(g) end
 
-            local _0x26 = {}
-            if #_0x9._0xC > 0 then table.insert(_0x26, #_0x9._0xC .. "\x20\x53\x65\x65\x64\x73") end
-            if #_0x9._0xD > 0 then table.insert(_0x26, #_0x9._0xD .. "\x20\x45\x67\x67\x73") end
-            if #_0x9._0xE > 0 then table.insert(_0x26, #_0x9._0xE .. "\x20\x47\x65\x61\x72\x73") end
-            _0x19:Set(#_0x26 > 0 and ("\x53\x65\x6C\x65\x63\x74\x65\x64\x3A\x20" .. table.concat(_0x26, "\x2C\x20")) or "\x53\x65\x6C\x65\x63\x74\x65\x64\x3A\x20\x4E\x6F\x6E\x65")
+            -- Update Selection Label
+            local parts={}
+            if #Config.SelectedSeeds>0 then table.insert(parts,#Config.SelectedSeeds.." Seeds") end
+            if #Config.SelectedEggs>0 then table.insert(parts,#Config.SelectedEggs.." Eggs") end
+            if #Config.SelectedGears>0 then table.insert(parts,#Config.SelectedGears.." Gears") end
+            SelectionLabel:Set(#parts>0 and ("Selected: "..table.concat(parts,", ")) or "Selected: None")  
 
-            local _0x27 = math.floor(tick() - _0x11._0x12)
-            _0x1A:Set("\x41\x46\x4B\x20\x54\x69\x6D\x65\x72\x3A\x20" .. _0x27 .. "\x73")
+            -- Update Timer Label
+            local elapsed = math.floor(tick() - TIMER.StartTime)
+            TimerLabel:Set("AFK Timer: "..elapsed.."s")
         end
     end
 end)
 
-if _0x9._0xB then
-    _0x8.Idled:Connect(function()
-        _0x6:CaptureController()
-        _0x6:Button2Down(Vector2.new(), workspace.CurrentCamera.CFrame)
+-- Anti-AFK
+if Config.AntiAFK then
+    LocalPlayer.Idled:Connect(function()
+        VirtualUser:CaptureController()
+        VirtualUser:Button2Down(Vector2.new(), workspace.CurrentCamera.CFrame)
         task.wait(0.5)
-        _0x6:Button2Up(Vector2.new(), workspace.CurrentCamera.CFrame)
+        VirtualUser:Button2Up(Vector2.new(), workspace.CurrentCamera.CFrame)
     end)
 end
 
-_0x17:CreateButton({Name="\x52\x65\x6A\x6F\x69\x6E\x20\x2F\x20\x48\x6F\x70\x20\x53\x65\x72\x76\x65\x72", Callback=function()
-    _0x3:Notify({Title="\x54\x65\x6C\x65\x70\x6F\x72\x74", Content="\x41\x74\x74\x65\x6D\x70\x74\x69\x6E\x67\x20\x74\x6F\x20\x72\x65\x6A\x6F\x69\x6E\x2F\x68\x6F\x70\x20\x73\x65\x72\x76\x65\x72\x2E\x2E\x2E", Duration=4})
-    _0x7:Teleport(game.PlaceId, _0x8)
-end})
-
-_0x17:CreateDropdown({
-    Name="\x55\x49\x20\x54\x68\x65\x6D\x65", Options={"\x41\x6D\x65\x74\x68\x79\x73\x74", "\x4F\x63\x65\x61\x6E", "\x43\x72\x69\x6D\x73\x6F\x6E", "\x44\x61\x72\x6B", "\x4C\x69\x67\x68\x74"},
-    CurrentOption=_0x9._0x10,
-    Callback=function(_0x28) _0x9._0x10 = _0x28; _0x3:SetTheme(_0x28) end
+-- Rejoin Button
+MainTab:CreateButton({
+    Name="Rejoin / Hop Server",
+    Callback=function()
+        Rayfield:Notify({
+            Title="Teleport",
+            Content="Attempting to rejoin/hop server...",
+            Duration=4
+        })
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+    end
 })
 
-_0x3:Notify({
-    Title="\x57\x65\x6C\x63\x6F\x6D\x65\x20" .. _0x8.Name,
-    Content="\x62\x79\x20\x4D\x41\x52\x54\x20\x4A\x4F\x48\x4E\x20\x4C\x41\x42\x41\x43\x4F\x20\xE2\x80\x94\x20\x4D\x75\x6C\x74\x69\x2D\x41\x75\x74\x6F\x42\x75\x79\x20\x54\x69\x6D\x65\x72\x20\x52\x65\x61\x64\x79",
+-- Theme Selector
+MainTab:CreateDropdown({
+    Name="UI Theme", Options={"Amethyst","Ocean","Crimson","Dark","Light"},
+    CurrentOption=Config.Theme,
+    Callback=function(theme) Config.Theme=theme; Rayfield:SetTheme(theme); saveConfig() end
+})
+
+-- PLAYER TAB (Movement Mods)
+local PlayerTab = Window:CreateTab("Player", 4483362458)
+
+-- WalkSpeed Toggle
+PlayerTab:CreateToggle({
+    Name = "Modify WalkSpeed",
+    CurrentValue = Config.ModifyWalkSpeed,
+    Callback = function(Value)
+        Config.ModifyWalkSpeed = Value
+        if Value and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = Config.WalkSpeedValue
+        elseif LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        end
+        saveConfig()
+    end,
+})
+
+-- WalkSpeed Slider
+PlayerTab:CreateSlider({
+    Name = "WalkSpeed Value",
+    Range = {16, 200},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = Config.WalkSpeedValue,
+    Callback = function(Value)
+        Config.WalkSpeedValue = Value
+        if Config.ModifyWalkSpeed and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end
+        saveConfig()
+    end,
+})
+
+-- JumpPower Toggle
+PlayerTab:CreateToggle({
+    Name = "Modify JumpPower",
+    CurrentValue = Config.ModifyJumpPower,
+    Callback = function(Value)
+        Config.ModifyJumpPower = Value
+        if Value and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.UseJumpPower = true
+            LocalPlayer.Character.Humanoid.JumpPower = Config.JumpPowerValue
+        elseif LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.JumpPower = 50
+        end
+        saveConfig()
+    end,
+})
+
+-- JumpPower Slider
+PlayerTab:CreateSlider({
+    Name = "JumpPower Value",
+    Range = {50, 300},
+    Increment = 1,
+    Suffix = "Jump",
+    CurrentValue = Config.JumpPowerValue,
+    Callback = function(Value)
+        Config.JumpPowerValue = Value
+        if Config.ModifyJumpPower and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character.Humanoid.JumpPower = Value
+        end
+        saveConfig()
+    end,
+})
+
+-- Restore values on load
+task.defer(function()
+    if Config.ModifyWalkSpeed and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = Config.WalkSpeedValue
+    end
+    if Config.ModifyJumpPower and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+        LocalPlayer.Character.Humanoid.UseJumpPower = true
+        LocalPlayer.Character.Humanoid.JumpPower = Config.JumpPowerValue
+    end
+end)
+
+-- Notify Welcome
+Rayfield:Notify({
+    Title="Welcome "..LocalPlayer.Name,
+    Content="by MART JOHN LABACO — Multi-AutoBuy + Player Tab Ready",
     Duration=6,
     Image=4483362458
 })
